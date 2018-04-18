@@ -7,20 +7,20 @@ output: pdf_document
 
 knitr::opts_chunk$set(fig.width=5, fig.height=4, fig.align = "center") 
 
+rm(list = ls())
+
+```
+
+```{r plot}
+
 # Basic ggplot-related packages
 
 library(ggplot2)
 library(latex2exp)
 
-rm(list = ls())
-
 # Diamonds samples dataset has prices and other attributes of ~54,000 diamonds.
 
 data(diamonds)
-
-```
-
-```{r plot}
 
 # Setting options for plot formatting, including font type + size, and title
 # alignment, using `minimal` theme
