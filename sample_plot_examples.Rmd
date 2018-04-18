@@ -36,6 +36,9 @@ theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") +
 
 ```
 
+## Data Used in Examples
+
+Most of the datasets used in the included examples come directly from the sample datasets included with ```R```. Several of the later graphs, however, use player-level basketball data from the 2015-2016 season from (https://www.basketball-reference.com). 
 
 ## Useful Resources
 
