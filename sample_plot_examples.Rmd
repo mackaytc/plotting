@@ -5,24 +5,26 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(fig.width=4, fig.height=3, fig.align = "center") 
 
 rm(list = ls())
 
+library(ggplot2)
+
 ```
 
 \tableofcontents
+
+# Introduction
+
+Examples of how to create basic plots using the ```ggplot2``` package. 
 
 \newpage
 
 ## Density Plot
 
 ```{r density.plot}
-
-# Basic ggplot-related packages
-
-library(ggplot2)
-library(latex2exp)
 
 # Diamonds samples dataset has prices and other attributes of ~54,000 diamonds.
 
@@ -49,11 +51,6 @@ ggplot(data = diamonds, aes(x = depth)) + geom_density() +
 ## Scatter Plot
 
 ```{r scatter.plot}
-
-# Basic ggplot-related packages
-
-library(ggplot2)
-library(latex2exp)
 
 # Trees sample dataset has measurements of the height, weight, and length of
 # 31 observations.
@@ -82,11 +79,6 @@ ggplot(data = trees) + geom_point(aes(x = Height, y = Volume)) +
 ## Line Plot with Outcome Grouped by Factor Variable
 
 ```{r line.factor.plot, message = F}
-
-# Basic ggplot-related packages
-
-library(ggplot2)
-library(latex2exp)
 
 # Orange sample data set has 7 measurements of age and circumference for 5 
 # different oranges (total of 35 observations)
