@@ -4,13 +4,6 @@ author: "Taylor Mackay"
 output: pdf_document
 ---
 
-\tableofcontents
-
-\newpage
-
-## Simple Density Plot
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(fig.width=4, fig.height=3, fig.align = "center") 
 
@@ -18,7 +11,13 @@ rm(list = ls())
 
 ```
 
-```{r plot}
+\tableofcontents
+
+\newpage
+
+## Density Plot
+
+```{r density.plot}
 
 # Basic ggplot-related packages
 
@@ -44,3 +43,83 @@ ggplot(data = diamonds, aes(x = depth)) + geom_density() +
   theme_bcg
 
 ```
+
+\newpage
+
+## Scatter Plot
+
+```{r scatter.plot}
+
+# Basic ggplot-related packages
+
+library(ggplot2)
+library(latex2exp)
+
+# Trees sample dataset has measurements of the height, weight, and length of
+# 31 observations.
+
+data(trees)
+
+# Setting options for plot formatting, including font type + size, and title
+# alignment, using `minimal` theme
+
+theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Scatter Plot
+
+ggplot(data = trees) + geom_point(aes(x = Height, y = Volume)) + 
+  labs(title = "Sample Scatter Plot", 
+       y = "Volume", 
+       x = "Height") + 
+  theme_bcg
+
+```
+
+
+\newpage
+
+## Line Plot with Outcome Grouped by Factor Variable
+
+```{r line.factor.plot, message = F}
+
+# Basic ggplot-related packages
+
+library(ggplot2)
+library(latex2exp)
+
+# Orange sample data set has 7 measurements of age and circumference for 5 
+# different oranges (total of 35 observations)
+
+data(Orange)
+
+# Setting options for plot formatting, including font type + size, and title
+# alignment, using `minimal` theme
+
+theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Start by creating a observation count by ID variable using `dplyr`. Note that 
+# data needs to be in *long* form. 
+
+library(dplyr)
+
+df <- group_by(Orange, Tree) %>% 
+  mutate(count = row_number()) 
+
+# Creating re-ordered `tree` factor variable
+
+df$Tree <- factor(df$Tree, levels = c(1,2,3,4,5))
+
+# Line Plot-- notice options for setting x-axis ticks + legend label
+
+ggplot(data = df) + geom_line(aes(x = count, y = circumference, 
+                                  color = Tree)) +
+  labs(title = "Sample Line Plot with Factor Groupings", 
+       y = "Circumference (mm)", x = "Observation",
+       color = "Tree") + 
+  scale_x_continuous(breaks=seq(1, 7, 1)) + 
+  theme_bcg
+
+```
+
