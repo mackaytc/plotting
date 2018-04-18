@@ -36,13 +36,25 @@ theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") +
 
 ```
 
+
+## Useful Resources
+
+Useful websites with more information on ```R``` and ```ggplot2``` (click bulleted items for link to URL).  
+
+* [RStudio ```ggplot2``` Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+    + Two page PDF cheat sheet covering the basics of the ```ggplot2``` package
+* [Gallery of ```ggplot2``` Examples](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html)
+    + 50 different examples of plots, covering a range of plot types and customizations to things like legends and annotations
+* [```R``` Datasets Package](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html)
+    + A list of the sample datasets available with ```R``` that are used in this document. Includes a detailed description of all variables in each dataset.
+
 \newpage
 
 # Univariate Plots
 
 ## Density Plot
 
-```{r density.plot}
+```{r density.plot, fig.width=5, fig.height=4}
 
 # Diamonds samples dataset has prices and other attributes of ~54,000 diamonds.
 
@@ -58,9 +70,11 @@ ggplot(data = diamonds, aes(x = depth)) + geom_density() +
 
 ```
 
+\pagebreak
+
 ## Histograms with Grid Arrange
 
-```{r histogram}
+```{r histogram, fig.width=6, fig.height=3, message = F}
 
 # `gridExtra` allows you to print multiple plots together 
 
@@ -74,13 +88,13 @@ data("airquality")
 # Default Histogram
 
 p.1 <- ggplot(data = airquality) + geom_histogram(aes(x = Wind)) + 
-  labs(title = "Default Histogram (nbins = 30)", 
+  labs(title = "Default Histogram", 
        y = "Count", 
        x = "Average Daily Wind Speed (mph)") + 
   theme_bcg
 
-p.2 <- ggplot(data = airquality) + geom_histogram(aes(x = Wind), binwidth = 2) + 
-  labs(title = "Histogram with Bin Width of 2 mph Specified", 
+p.2 <- ggplot(data = airquality) + geom_histogram(aes(x = Wind), binwidth = 2) +
+  labs(title = "Bin Width Specified", 
        y = "", 
        x = "Average Daily Wind Speed (mph)") + 
   theme_bcg
