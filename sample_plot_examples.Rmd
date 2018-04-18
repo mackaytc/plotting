@@ -10,6 +10,8 @@ knitr::opts_chunk$set(fig.width=4, fig.height=3, fig.align = "center")
 
 rm(list = ls())
 
+options(xtable.comment = FALSE)
+
 library(ggplot2)
 
 ```
@@ -38,7 +40,20 @@ theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") +
 
 ## Data Used in Examples
 
-Most of the datasets used in the included examples come directly from the sample datasets included with ```R```. Several of the later graphs, however, use player-level basketball data from the 2015-2016 season from (https://www.basketball-reference.com). 
+Most of the datasets used in the first few examples come directly from the sample datasets included with ```R```. Many of the later plots, however, use player-level basketball data from the 2015-2016 season from (https://www.basketball-reference.com). This data set can be downloaded from Github using the following code. 
+
+```{r nba.data, message = F, results = "asis"}
+
+download.file("github.com/mackaytc/plotting/blob/master/basketball.Rda?raw=true",
+              "basketball.Rda")
+
+load("basketball.Rda")
+
+library(xtable)
+
+print(xtable(head(nba.data[,1:10])), include.rownames = F)
+
+```
 
 ## Useful Resources
 
@@ -166,3 +181,44 @@ ggplot(data = df) + geom_line(aes(x = count, y = circumference,
 
 ```
 
+\newpage
+
+## Line Plots with Facets to Create Subplots
+
+```{r line.facet.plots, fig.width=7, fig.height=5, message = F}
+
+# Load sample dataset with 2016 player statistics for all players in NBA
+
+load("basketball.Rda")
+
+# We'll `tidyr` to reshape the data from `wide` to `long` format using the
+# `gather` command and create a new dataset where each player in the data set
+# has two rows-- one corresponding to their defensive BPM and one corresponding
+# to their offensive BPM. 
+
+library(tidyr)
+library(dplyr)
+
+# We can use `magrittr` + the `%>%` operator to make the code below a bit more
+# streamlined
+
+library(magrittr)
+
+facet.data <- select(nba.data, Player, Pos, OBPM, DBPM) %>% 
+  gather(key = c(Player, Pos), value = BPM, OBPM:DBPM) %>% 
+  rename(stat = `c(Player, Pos)`) %>% 
+  arrange(Player)
+
+# Facet Plot-- note the formatting options at the bottom to specify facet
+# formatting
+
+ggplot(facet.data) + facet_grid(Pos ~ .) +  
+  geom_density(aes(x = BPM, color = stat)) + 
+  scale_x_continuous(breaks = seq(0, 12, 2)) + 
+  labs(title = "Comparing Offensive and Defensive BPM Scores by Position", 
+       x = "BPM", y = "Density", color = "") + 
+  theme_bcg + theme(strip.text.y = element_text(angle = 0),
+                    strip.background = element_rect(color = "grey70", 
+                                                    size = 0.5))
+
+```
