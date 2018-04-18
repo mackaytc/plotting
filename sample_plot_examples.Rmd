@@ -14,13 +14,31 @@ library(ggplot2)
 
 ```
 
+\newpage
+
 \tableofcontents
+
+\newpage
 
 # Introduction
 
-Examples of how to create basic plots using the ```ggplot2``` package. 
+This file contains examples of basic plots created using the ```ggplot2``` package in ``R`` and the corresponding code required to create each plot. All examples below require loading ```ggplot2```-- any other required packages are noted as needed in the included code.
+
+__NOTE:__ The specific style of the plots below is specified by using ```theme_bcg``` in addition to the other plot options. This calls the code below in order to specify the plot style, font type and size, and center plot titles.
+
+```{r theme}
+
+# Setting options for plot formatting, including font type + size, and title
+# alignment, using `minimal` theme
+
+theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
 
 \newpage
+
+# Univariate Plots
 
 ## Density Plot
 
@@ -29,12 +47,6 @@ Examples of how to create basic plots using the ```ggplot2``` package.
 # Diamonds samples dataset has prices and other attributes of ~54,000 diamonds.
 
 data(diamonds)
-
-# Setting options for plot formatting, including font type + size, and title
-# alignment, using `minimal` theme
-
-theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
-  theme(plot.title = element_text(hjust = 0.5))
 
 # Generating density plot 
 
@@ -46,7 +58,42 @@ ggplot(data = diamonds, aes(x = depth)) + geom_density() +
 
 ```
 
+## Histograms with Grid Arrange
+
+```{r histogram}
+
+# `gridExtra` allows you to print multiple plots together 
+
+library(gridExtra)
+
+# Airquality sample dataset has measurements of temperature, windspeed, and 
+# daily air quality in New York from May to September, 1973.
+
+data("airquality")
+
+# Default Histogram
+
+p.1 <- ggplot(data = airquality) + geom_histogram(aes(x = Wind)) + 
+  labs(title = "Default Histogram (nbins = 30)", 
+       y = "Count", 
+       x = "Average Daily Wind Speed (mph)") + 
+  theme_bcg
+
+p.2 <- ggplot(data = airquality) + geom_histogram(aes(x = Wind), binwidth = 2) + 
+  labs(title = "Histogram with Bin Width of 2 mph Specified", 
+       y = "", 
+       x = "Average Daily Wind Speed (mph)") + 
+  theme_bcg
+
+# Using `grid.arrange` to print both plots side by side (by setting nrow = 1)
+
+grid.arrange(p.1, p.2, nrow = 1)
+
+```
+
 \newpage
+
+# Two-Way Plots
 
 ## Scatter Plot
 
@@ -56,12 +103,6 @@ ggplot(data = diamonds, aes(x = depth)) + geom_density() +
 # 31 observations.
 
 data(trees)
-
-# Setting options for plot formatting, including font type + size, and title
-# alignment, using `minimal` theme
-
-theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
-  theme(plot.title = element_text(hjust = 0.5))
 
 # Scatter Plot
 
@@ -73,7 +114,6 @@ ggplot(data = trees) + geom_point(aes(x = Height, y = Volume)) +
 
 ```
 
-
 \newpage
 
 ## Line Plot with Outcome Grouped by Factor Variable
@@ -84,12 +124,6 @@ ggplot(data = trees) + geom_point(aes(x = Height, y = Volume)) +
 # different oranges (total of 35 observations)
 
 data(Orange)
-
-# Setting options for plot formatting, including font type + size, and title
-# alignment, using `minimal` theme
-
-theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
-  theme(plot.title = element_text(hjust = 0.5))
 
 # Start by creating a observation count by ID variable using `dplyr`. Note that 
 # data needs to be in *long* form. 
