@@ -136,9 +136,10 @@ grid.arrange(p.1, p.2, nrow = 1)
 
 data(trees)
 
-# Scatter Plot
+# Scatter Plot with size and color of points specified
 
-ggplot(data = trees) + geom_point(aes(x = Height, y = Volume)) + 
+ggplot(data = trees) + geom_point(aes(x = Height, y = Volume), 
+                                  size = 0.5, color = "grey30") + 
   labs(title = "Sample Scatter Plot", 
        y = "Volume", 
        x = "Height") + 
@@ -183,6 +184,62 @@ ggplot(data = df) + geom_line(aes(x = count, y = circumference,
 
 \newpage
 
+## Scatter Plot with Fitted Line
+
+```{r scatter.fitted.line, message = F}
+
+# Load sample dataset with 2016 player statistics for all players in NBA
+
+load("basketball.Rda")
+
+# Scatter Plot with Minutes Played and Player Efficiency Rating (PER)
+
+# Data is filtered to only players with at least one full game (48 minutes)
+# worth of playing time during the season. `geom_smooth` options set to display
+# a 3rd-degree polynomial fitted line with SE bands displayed
+
+library(dplyr)
+
+ggplot(data = filter(nba.data, MP > 48), aes(x = MP, y = PER)) + 
+  geom_point(size = 0.5, color = "grey30") + 
+  geom_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), se = TRUE) + 
+  labs(title = "Relationship between Minutes Played and PER", 
+       y = "Player Efficiency Rating (PER)", 
+       x = "Minutes Played (MP)") + 
+  theme_bcg
+  
+```
+
+\newpage
+
+## Scatter Plot with (Neatly) Labeled Points
+
+```{r labeled.scatter.plot,fig.width=7, fig.height=5, message = F}
+
+# Load sample dataset with 2016 player statistics for all players in NBA
+
+load("basketball.Rda")
+
+# Plot Relationship between Offensive and Defensive Box Plus-Minus (BPM)
+
+# We can use the `ggrepel` package for neatly formatted point labelling
+
+library(ggrepel)
+
+# Use `dplyr` to select + sort the top 10 players by total minutes played
+
+arrange(filter(nba.data, MP > 2000),-MP)[1:12,] %>% 
+  ggplot(aes(x = OBPM, y = DBPM)) + 
+  geom_point(size = 1, color = "grey30") + 
+  geom_text_repel(aes(label = Player), family = "Palatino", size = 3,
+                  segment.color = NA) + 
+  labs(title = "Offensive and Defensive Box Plus-Minus for Minutes Leaders", 
+         y = "Defensive BPM", x = "Offensive BPM") + theme_bcg
+
+```
+
+\newpage
+
 ## Line Plots with Facets to Create Subplots
 
 ```{r line.facet.plots, fig.width=7, fig.height=5, message = F}
@@ -196,13 +253,8 @@ load("basketball.Rda")
 # has two rows-- one corresponding to their defensive BPM and one corresponding
 # to their offensive BPM. 
 
-library(tidyr)
 library(dplyr)
-
-# We can use `magrittr` + the `%>%` operator to make the code below a bit more
-# streamlined
-
-library(magrittr)
+library(tidyr)
 
 facet.data <- select(nba.data, Player, Pos, OBPM, DBPM) %>% 
   gather(key = c(Player, Pos), value = BPM, OBPM:DBPM) %>% 
