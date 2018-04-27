@@ -1,5 +1,5 @@
 ################################################################################
-# Basic Maps Using ggplot2
+# Plotting Continuous Variables on Maps Using ggplot2
 ################################################################################
 
 library(dplyr)
@@ -29,8 +29,17 @@ library(gridExtra)
 # the series of points-based data provided by the `maps` package and converts
 # into a df that is readable via ggplot2
 
-counties <- map_data("county")
-states   <- map_data("state")
+states.data <- map_data("state") 
+
+# Crime data comes from `USArrests` sample data set
+
+data("USArrests")
+
+USArrests$region <- tolower(rownames(USArrests))
+
+# Use `dplyr` to merge data sets using region (state) as ID variable
+
+map.df <- inner_join(states.data, USArrests, by = "region")
 
 # Theme below removes all unneccessary axes and tick marks from plots
 
@@ -44,25 +53,17 @@ ditch_the_axes <- theme(
 )
 
 ################################################################################
-# Basic Map of United States and California
+# Plotting State Murder Rate Data
 ################################################################################
 
-# Basic state-level plot of the United States. Note the use of `coord_fixed()` 
-# to prevent distortion along the x / y axes-- setting alternative parameter
-# options here "stretches" the along the y-axis.
+# Mapping state level murder counts. Check out the URL below for ggplot colors
+#   http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 
-p.1 <- ggplot(states, mapping = aes(x = long, y = lat, group = group)) + 
-              coord_fixed(1) + geom_polygon(color = "black", fill = "gray95") + 
-              theme_minimal() + ditch_the_axes 
-
-# Plot of the counties within California
-
-p.2 <- ggplot(subset(counties, region == "california"), 
-              mapping = aes(x = long, y = lat, group = group)) + 
-              coord_fixed(1) + geom_polygon(color = "black", fill = "gray95") + 
-              theme_minimal() + ditch_the_axes 
-
-# `grid.arrange()` to display them next to one another
-
-grid.arrange(p.1, p.2, widths = 2:1)
+ggplot(map.df, aes(x = long, y = lat, group = group)) + 
+  geom_polygon(color = "white", fill = "white") + 
+  geom_polygon(data = map.df, aes(fill = Murder)) + 
+  scale_fill_gradient(low = "grey90", high = "red") + 
+  coord_fixed(1) + labs(fill = "Murders per 100k\nPeople") + 
+  theme_minimal(base_size = 9, base_family = "Palatino") + 
+  ditch_the_axes
 

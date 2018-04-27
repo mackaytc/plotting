@@ -319,7 +319,7 @@ ggplot(plt.data, aes(x = X3PAr, y = FTr)) +
 
 ## Line Plots with Facets to Create Subplots
 
-```{r line.facet.plots, fig.width=7, fig.height=5, message = F}
+```{r line.facet.plots, fig.width=4, fig.height=3, message = F}
 
 # Load sample dataset with 2016 player statistics for all players in NBA
 
@@ -344,7 +344,7 @@ facet.data <- select(nba.data, Player, Pos, OBPM, DBPM) %>%
 ggplot(facet.data) + facet_grid(Pos ~ .) +  
   geom_density(aes(x = BPM, color = stat)) + 
   scale_x_continuous(breaks = seq(0, 12, 2)) + 
-  labs(title = "Comparing Offensive and Defensive BPM Scores by Position", 
+  labs(title = "Comparing Offensive and Defensive\nBPM Scores by Position", 
        x = "BPM", y = "Density", color = "") + 
   theme_bcg + theme(strip.text.y = element_text(angle = 0),
                     strip.background = element_rect(color = "grey70", 
@@ -385,13 +385,13 @@ ditch_the_axes <- theme(axis.text = element_blank(), axis.line = element_blank()
 # to prevent distortion along the x / y axes-- setting alternative parameter
 # options here "stretches" the along the y-axis
 
-p.1 <- ggplot(data = states, mapping = aes(x = long, y = lat, group = group)) + 
+p.1 <- ggplot(states, mapping = aes(x = long, y = lat, group = group)) + 
               coord_fixed(1) + geom_polygon(color = "black", fill = "gray95") + 
               theme_minimal() + ditch_the_axes
 
 # Plot of the counties within California
 
-p.2 <- ggplot(data = subset(counties, region == "california"), 
+p.2 <- ggplot(subset(counties, region == "california"), 
               mapping = aes(x = long, y = lat, group = group)) + 
               coord_fixed(1) + geom_polygon(color = "black", fill = "gray95") + 
               theme_minimal() + ditch_the_axes 
@@ -404,7 +404,7 @@ grid.arrange(p.1, p.2, widths = 2:1)
 
 ## Plotting Discrete Variables on a Map
 
-```{r map.discrete.var, fig.width=4, fig.height=3, message = F}
+```{r map.discrete.var, fig.width=5, fig.height=4, message = F}
 
 library(maps)
 library(ggthemes)
@@ -447,3 +447,98 @@ nc.map +
   theme_bcg + ditch_the_axes + theme(legend.position="none")
 
 ```
+
+\newpage
+
+## Plotting Continuous Variables on a Map
+
+```{r map.continuous.var, fig.width=7, fig.height=5, message = F}
+
+library(maps)
+library(ggthemes)
+library(gridExtra)
+
+# Loading geographic data for states + counties in the US. 
+
+states.data <- map_data("state") 
+
+# Crime data comes from `USArrests` sample data set
+
+data("USArrests")
+
+USArrests$region <- tolower(rownames(USArrests))
+
+# Use `dplyr` to merge data sets using region (state) as ID variable
+
+map.df <- inner_join(states.data, USArrests, by = "region")
+
+# Mapping state level murder counts. Check out the URL below for ggplot colors
+#   http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+
+ggplot(map.df, aes(x = long, y = lat, group = group)) + 
+  geom_polygon(color = "white", fill = "white") + 
+  geom_polygon(data = map.df, aes(fill = Murder)) + 
+  scale_fill_gradient(low = "grey90", high = "red") + 
+  coord_fixed(1) + labs(fill = "Murders per 100k\nPeople") + 
+  theme_minimal(base_size = 9, base_family = "Palatino") + 
+  ditch_the_axes
+
+```
+
+\newpage 
+
+# Using the \texttt{qplot} Function
+
+## Introductory Examples
+
+```{r qplot.basics, fig.width=4.5, fig.height=4.5, message = F}
+
+library(gridExtra)
+
+# Sample `cars` dataset
+
+data("mtcars")
+
+# Basic `qplot` examples
+
+# Scatter plot
+
+p.1 <- qplot(mpg, wt, data = mtcars) 
+
+# Scatter plot with factor variable categorization
+
+p.2 <- qplot(mpg, wt, data = mtcars, color = cyl)
+
+# Chooding `size` instead of `color`
+
+p.3 <- qplot(mpg, wt, data = mtcars, size = cyl)
+
+grid.arrange(p.1, p.2, p.3, layout_matrix = rbind(c(1,1),c(2,3)), 
+             nrow = 2, ncol = 2)
+
+```
+
+\newpage
+
+## Additional Examples
+
+```{r qplot.geoms, fig.width=6, fig.height=2.5, message = F}
+
+# Sample `cars` dataset
+
+data("mtcars")
+
+# Some additional plots
+
+# Facet plot by factor variable
+
+qplot(mpg, wt, data = mtcars, facets = .~cyl)
+
+# Specifying multiple `geom` options
+
+qplot(factor(cyl), wt, data = mtcars, geom = c("boxplot", "jitter"))
+
+```
+
+
+
