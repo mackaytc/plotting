@@ -5,6 +5,14 @@
 library(dplyr)
 library(ggplot2)
 
+rm(list = ls())
+
+# Setting options for plot formatting, including font type + size, and title
+# alignment, using `minimal` theme
+
+theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
 # Load sample dataset with 2016 player statistics for all players in NBA
 
 load("basketball.Rda")
@@ -37,7 +45,7 @@ lbls.df <- filter(plt.data, X3PAr < x.min | X3PAr > x.max |
 
 # Scatter Plot
 
-ggplot(data = plt.data, aes(x = X3PAr, y = FTr)) + 
+ggplot(plt.data, aes(x = X3PAr, y = FTr)) + 
   geom_point(shape = 1, color = "grey30") + 
   geom_text_repel(data = lbls.df, aes(x = X3PAr, y = FTr, label = Player), 
                   family = "Palatino", box.padding = 0.5, 

@@ -7,6 +7,14 @@
 library(dplyr)
 library(ggplot2)
 
+rm(list = ls())
+
+# Setting options for plot formatting, including font type + size, and title
+# alignment, using `minimal` theme
+
+theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
 # Load sample dataset with 2016 player statistics for all players in NBA
 
 load("basketball.Rda")
