@@ -1,5 +1,5 @@
 ################################################################################
-# Basic Maps Using ggplot2
+# Plotting Discrete Variables on Maps Using ggplot2
 ################################################################################
 
 library(dplyr)
@@ -29,8 +29,8 @@ library(gridExtra)
 # the series of points-based data provided by the `maps` package and converts
 # into a df that is readable via ggplot2
 
-counties <- map_data("county")
-states   <- map_data("state")
+nc.counties <- map_data("county") %>% 
+  subset(region == "north carolina")
 
 # Theme below removes all unneccessary axes and tick marks from plots
 
@@ -44,25 +44,37 @@ ditch_the_axes <- theme(
 )
 
 ################################################################################
-# Basic Map of United States and California
+# Plot the Counties in North Carolina with a Particular Type of Law in Effect
 ################################################################################
 
-# Basic state-level plot of the United States. Note the use of `coord_fixed()` 
-# to prevent distortion along the x / y axes-- setting alternative parameter
-# options here "stretches" the along the y-axis.
+# We want to a plot that highlights the counties in North Carolina that have a 
+# particular type of law in effect
 
-p.1 <- ggplot(data = states, mapping = aes(x = long, y = lat, group = group)) + 
-              coord_fixed(1) + geom_polygon(color = "black", fill = "gray95") + 
-              theme_minimal() + ditch_the_axes 
+# We can start with a basic map of the counties in NC
 
-# Plot of the counties within California
+nc.map <- ggplot(nc.counties, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1) + geom_polygon(color = "black", fill = "white") + 
+  theme_minimal() + ditch_the_axes 
 
-p.2 <- ggplot(data = subset(counties, region == "california"), 
-              mapping = aes(x = long, y = lat, group = group)) + 
-              coord_fixed(1) + geom_polygon(color = "black", fill = "gray95") + 
-              theme_minimal() + ditch_the_axes 
+# Now we can create a variable set equal to 1 if a particular county has the
+# type of law we're interested in 
 
-# `grid.arrange()` to display them next to one another
+btb.counties <- c("buncombe", "cumberland", "durham", "mecklenburg", "wake")
 
-grid.arrange(p.1, p.2, widths = 2:1)
+nc.counties$btb.law <- 0
+
+# Set btb.law dummy variable equal to 1 if the county name is in the list
+# of `btb.counties`
+
+nc.counties[nc.counties$subregion %in% btb.counties, ]$btb.law <- 1
+
+# Creating map with counties that have law in effect shaded in 
+
+nc.map + 
+  geom_polygon(data = nc.counties, aes(fill = as.factor(btb.law)), 
+               color = alpha("black", 0.2)) +
+  scale_colour_discrete() +  
+  scale_fill_manual(values = alpha(c("gray95", "black"), .85)) +
+  geom_polygon(color = "black", fill = NA) +
+  theme_bcg + ditch_the_axes + theme(legend.position="none")
 

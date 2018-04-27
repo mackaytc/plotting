@@ -358,7 +358,7 @@ ggplot(facet.data) + facet_grid(Pos ~ .) +
 
 ## Basic Map of the United States and Counties of California
 
-```{r basic.maps, fig.width=9, fig.height=7, message = F}
+```{r basic.maps, fig.width=5, fig.height=4, message = F}
 
 # Packages for map plotting-- `ggthemes` loads the `theme_minimal()` style 
 # used below, while `gridExtra` lets you control layouts of displayed plots. 
@@ -367,8 +367,6 @@ ggplot(facet.data) + facet_grid(Pos ~ .) +
 library(maps)
 library(ggthemes)
 library(gridExtra)
-
-# Loading Data + Plotting Theme
 
 # Loading geographic data for states + counties in the US. `map_data()` takes
 # the series of points-based data provided by the `maps` package and converts
@@ -379,14 +377,9 @@ states   <- map_data("state")
 
 # Theme below removes all unneccessary axes and tick marks from plots
 
-ditch_the_axes <- theme(
-  axis.text = element_blank(),
-  axis.line = element_blank(),
-  axis.ticks = element_blank(),
-  panel.border = element_blank(),
-  panel.grid = element_blank(),
-  axis.title = element_blank()
-)
+ditch_the_axes <- theme(axis.text = element_blank(), axis.line = element_blank(),
+                        axis.ticks = element_blank(), panel.border = element_blank(),
+                        panel.grid = element_blank(), axis.title = element_blank())
 
 # Basic state-level plot of the United States. Note the use of `coord_fixed()` 
 # to prevent distortion along the x / y axes-- setting alternative parameter
@@ -406,5 +399,51 @@ p.2 <- ggplot(data = subset(counties, region == "california"),
 # `grid.arrange()` to display them next to one another
 
 grid.arrange(p.1, p.2, widths = 2:1)
+
+```
+
+## Plotting Discrete Variables on a Map
+
+```{r map.discrete.var, fig.width=4, fig.height=3, message = F}
+
+library(maps)
+library(ggthemes)
+library(gridExtra)
+
+# Subset north carolina data from `counties` data in previous example
+
+nc.counties <- map_data("county") %>% 
+  subset(region == "north carolina")
+
+# We want to a plot that highlights the counties in North Carolina that have a 
+# particular type of law in effect
+
+# We can start with a basic map of the counties in NC
+
+nc.map <- ggplot(nc.counties, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1) + geom_polygon(color = "black", fill = "white") + 
+  theme_minimal() + ditch_the_axes 
+
+# Now we can create a variable set equal to 1 if a particular county has the
+# type of law we're interested in 
+
+btb.counties <- c("buncombe", "cumberland", "durham", "mecklenburg", "wake")
+
+nc.counties$btb.law <- 0
+
+# Set btb.law dummy variable equal to 1 if the county name is in the list
+# of `btb.counties`
+
+nc.counties[nc.counties$subregion %in% btb.counties, ]$btb.law <- 1
+
+# Creating map with counties that have law in effect shaded in 
+
+nc.map + 
+  geom_polygon(data = nc.counties, aes(fill = as.factor(btb.law)), 
+               color = alpha("black", 0.2)) +
+  scale_colour_discrete() +  
+  scale_fill_manual(values = alpha(c("gray95", "black"), .85)) +
+  geom_polygon(color = "black", fill = NA) +
+  theme_bcg + ditch_the_axes + theme(legend.position="none")
 
 ```

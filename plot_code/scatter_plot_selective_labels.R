@@ -48,7 +48,7 @@ lbls.df <- filter(plt.data, X3PAr < x.min | X3PAr > x.max |
 ggplot(plt.data, aes(x = X3PAr, y = FTr)) + 
   geom_point(shape = 1, color = "grey30") + 
   geom_text_repel(data = lbls.df, aes(x = X3PAr, y = FTr, label = Player), 
-                  family = "Palatino", box.padding = 0.5, 
+                  family = "Palatino", box.padding = 0.5, size = 2.8,
                   segment.color = "grey80") + 
   labs(title = "Bubble Plot with Factor Labelling", 
        x = "Percent of Shots Taken from 3-Point Line", 
