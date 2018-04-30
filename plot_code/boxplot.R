@@ -1,5 +1,5 @@
 ################################################################################
-# Scatter Plot Using ggplot2
+# Boxplot Using ggplot2
 ################################################################################
 
 # Basic ggplot-related packages
@@ -15,22 +15,22 @@ rm(list = ls())
 theme_bcg <- theme_minimal(base_size = 9, base_family = "Palatino") + 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Trees sample dataset has measurements of the height, weight, and length of
-# 31 observations.
+# Orange sample data set has 7 measurements of age and circumference for 5 
+# different oranges (total of 35 observations)
 
-data(trees)
+data(Orange)
 
 ################################################################################
 # Plotting
 ################################################################################
 
-# Basic boxplot grouped by `tree` factor variable
+# Scatter Plot with size and color of points specified
 
-ggplot(trees) + 
-  geom_point(aes(x = Height, y = Volume), size = 0.5, color = "grey30") + 
-  labs(title = "Sample Scatter Plot", 
-       y = "Volume", 
-       x = "Height") + 
+ggplot(Orange) + 
+  geom_boxplot(aes(x = Tree, y = circumference), fill = "grey95") + 
+  labs(title = "Sample Boxplot", 
+       y = "Circumference (cm)", 
+       x = "Tree") + 
   theme_bcg
 
 

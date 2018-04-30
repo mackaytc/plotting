@@ -1,12 +1,12 @@
 ---
-title: "Sample Plots"
+title: 'Basic ``ggplot2`` Examples'
 author: "Taylor Mackay"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(fig.width=4, fig.height=3, fig.align = "center") 
+knitr::opts_chunk$set(fig.width=5, fig.height=4, fig.align = "center") 
 
 rm(list = ls())
 
@@ -84,6 +84,29 @@ ggplot(data = diamonds, aes(x = depth)) + geom_density() +
   labs(title = "Sample Density Plot", 
        y = "Density", 
        x = "Depth") + 
+  theme_bcg
+
+```
+
+\pagebreak
+
+## Boxplot by Factor Variable
+
+```{r boxplot, message = F}
+
+
+# Orange sample data set has 7 measurements of age and circumference for 5 
+# different oranges (total of 35 observations)
+
+data(Orange)
+
+# Basic boxplot grouped by `tree` factor variable
+
+ggplot(Orange) + 
+  geom_boxplot(aes(x = Tree, y = circumference), fill = "grey95") + 
+  labs(title = "Sample Boxplot", 
+       y = "Circumference (cm)", 
+       x = "Tree") + 
   theme_bcg
 
 ```
@@ -358,7 +381,7 @@ ggplot(facet.data) + facet_grid(Pos ~ .) +
 
 ## Basic Map of the United States and Counties of California
 
-```{r basic.maps, fig.width=5, fig.height=4, message = F}
+```{r basic.maps, fig.width=5, fig.height=4, message = F, warning = F}
 
 # Packages for map plotting-- `ggthemes` loads the `theme_minimal()` style 
 # used below, while `gridExtra` lets you control layouts of displayed plots. 
