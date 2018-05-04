@@ -16,6 +16,7 @@ library(ggplot2)
 
 ```
 
+
 \newpage
 
 \tableofcontents
@@ -66,7 +67,7 @@ Useful websites with more information on ```R``` and ```ggplot2``` (click bullet
 * [```R``` Datasets Package](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html)
     + A list of the sample datasets available with ```R``` that are used in this document. Includes a detailed description of all variables in each dataset.
 
-\newpage
+~ \newpage
 
 # Univariate Plots
 
@@ -88,7 +89,7 @@ ggplot(data = diamonds, aes(x = depth)) + geom_density() +
 
 ```
 
-\pagebreak
+~ \newpage
 
 ## Boxplot by Factor Variable
 
@@ -111,7 +112,7 @@ ggplot(Orange) +
 
 ```
 
-\pagebreak
+~ \newpage
 
 ## Histograms with Grid Arrange
 
@@ -147,31 +148,38 @@ grid.arrange(p.1, p.2, nrow = 1)
 
 ```
 
-\newpage
+~ \newpage
 
 # Two-Way Plots
 
-## Scatter Plot
+## Line Plot
 
-```{r scatter.plot}
+```{r line.plot, message = F}
 
-# Trees sample dataset has measurements of the height, weight, and length of
-# 31 observations.
+# Airmiles data set contains figures for the revenue passenger miles flown by 
+# commercial airlines in the United States for each year from 1937 to 1960
 
-data(trees)
+data(airmiles)
 
-# Scatter Plot with size and color of points specified
+# Line Plot
 
-ggplot(trees) + 
-  geom_point(aes(x = Height, y = Volume), size = 0.5, color = "grey30") + 
-  labs(title = "Sample Scatter Plot", 
-       y = "Volume", 
-       x = "Height") + 
+# Constructing dataframe to pass to `ggplot`
+
+df <- as.data.frame(cbind(1937:1960, 
+                    airmiles[1:24]))
+
+# Basic line plot
+
+ggplot(df) + 
+  geom_line(aes(x = V1, y = V2), size = 0.5, color = "grey30") + 
+  labs(title = "Sample Line Plot", 
+       y = "Total Miles Flown by All Commerical Airlines", 
+       x = "Year") + 
   theme_bcg
 
 ```
 
-\newpage
+~ \newpage
 
 ## Line Plot with Outcome Grouped by Factor Variable
 
@@ -205,7 +213,111 @@ ggplot(df) + geom_line(aes(x = count, y = circumference, color = Tree)) +
 
 ```
 
-\newpage
+~ \newpage
+
+## Line Plots with Facets to Create Subplots
+
+```{r line.facet.plots, fig.width=4, fig.height=3.5, message = F}
+
+# Load sample dataset with 2016 player statistics for all players in NBA
+
+load("basketball.Rda")
+
+# We'll `tidyr` to reshape the data from `wide` to `long` format using the
+# `gather` command and create a new dataset where each player in the data set
+# has two rows-- one corresponding to their defensive BPM and one corresponding
+# to their offensive BPM. 
+
+library(dplyr)
+library(tidyr)
+
+facet.data <- select(nba.data, Player, Pos, OBPM, DBPM) %>% 
+  gather(key = c(Player, Pos), value = BPM, OBPM:DBPM) %>% 
+  rename(stat = `c(Player, Pos)`) %>% 
+  arrange(Player)
+
+# Facet Plot-- note the formatting options at the bottom to specify facet
+# formatting
+
+ggplot(facet.data) + facet_grid(Pos ~ .) +  
+  geom_density(aes(x = BPM, color = stat)) + 
+  scale_x_continuous(breaks = seq(0, 12, 2)) + 
+  scale_y_continuous(breaks = seq(0, 0.4, .2)) + 
+  labs(title = "Comparing Offensive and Defensive\nBPM Scores by Position", 
+       x = "BPM", y = "Density", color = "") + 
+  theme_bcg + theme(strip.text.y = element_text(angle = 0),
+                    strip.background = element_rect(color = "grey70", size = 0.5))
+
+```
+
+~ \newpage
+
+## Scatter Plot
+
+```{r scatter.plot}
+
+# Trees sample dataset has measurements of the height, weight, and length of
+# 31 observations.
+
+data(trees)
+
+# Scatter Plot with size and color of points specified
+
+ggplot(trees) + 
+  geom_point(aes(x = Height, y = Volume), size = 0.5, color = "grey30") + 
+  labs(title = "Sample Scatter Plot", 
+       y = "Volume", 
+       x = "Height") + 
+  theme_bcg
+
+```
+
+~ \newpage
+
+## Scatter Plot with Marginal Densities
+
+```{r scatter.marginal.densities, message = F, fig.width=7, fig.height=5}
+
+# Trees sample dataset has measurements of the height, weight, and length of
+# 31 observations.
+
+data(trees)
+
+# Scatter Plot with Marginal Densities
+
+# To generate this graph we'll use the `ggExtra` package
+
+suppressWarnings(library(ggExtra))
+
+# Basic scatter plot
+
+plot.1 <- ggplot(trees, aes(x = Height, y = Volume)) + 
+  geom_point(size = 1, color = "grey30") + 
+  labs(title = "Continuous Densities", 
+       y = "Volume", 
+       x = "Height") +
+  theme_bcg
+
+# Adding marginal densities
+
+p.1 <- ggMarginal(plot.1, type = "density")
+
+# Basic scatter plot
+
+plot.2 <- ggplot(trees, aes(x = Height, y = Volume)) + 
+  geom_point(size = 1, color = "grey30") + 
+  labs(title = "Histograms", 
+       y = "", 
+       x = "Height") +
+  theme_bcg
+ 
+p.2 <- ggMarginal(plot.2, type = "histogram")
+
+grid.arrange(p.1, p.2, nrow = 1)
+
+```
+
+~ \newpage 
 
 ## Scatter Plot with Fitted Line
 
@@ -233,11 +345,11 @@ ggplot(filter(nba.data, MP > 48), aes(x = MP, y = PER)) +
   
 ```
 
-\newpage
+~ \newpage
 
 ## Scatter Plot with (Neatly) Labeled Points
 
-```{r labeled.scatter.plot,fig.width=7, fig.height=5, message = F}
+```{r labeled.scatter.plot, fig.width=7, fig.height=5, message = F}
 
 # Load sample dataset with 2016 player statistics for all players in NBA
 
@@ -260,7 +372,8 @@ arrange(filter(nba.data, MP > 2000),-MP)[1:12,] %>%
          y = "Defensive BPM", x = "Offensive BPM") + theme_bcg
 
 ```
-\newpage
+
+~ \newpage
 
 ## Scatter Plot with Selectively Labeled Points
 
@@ -301,14 +414,35 @@ ggplot(plt.data, aes(x = X3PAr, y = FTr)) +
   geom_text_repel(data = lbls.df, aes(x = X3PAr, y = FTr, label = Player), 
                   family = "Palatino", box.padding = 0.5, size = 2.8, 
                   segment.color = "grey80") + 
-  labs(title = "Bubble Plot with Factor Labelling", 
+  labs(title = "Scatter Plot with Subset Labelling", 
        x = "Percent of Shots Taken from 3-Point Line", 
        y = "Free Throws per Field Goal Attempt (FTr)") + 
   theme_bcg 
 
 ```
 
-\newpage
+~ \newpage
+
+## Violin Plot by Factor Variable
+
+```{r violin.plot, message = F}
+
+# Load sample dataset with 2016 player statistics for all players in NBA
+
+load("basketball.Rda")
+
+# Violin Plot by Factor Variable-- Splitting Players by Position
+
+ggplot(nba.data) + 
+  geom_violin(aes(x = Pos, y = DBPM)) + 
+  labs(title = "Comparing Defensive BPM Scores by Position", 
+       x = "DBPM", y = "Density", color = "") + 
+  theme_bcg + theme(strip.text.y = element_text(angle = 0),
+                    strip.background = element_rect(color = "grey70", size = 0.5))
+
+```
+
+~ \newpage
 
 ## Bubble Plot 
 
@@ -338,44 +472,7 @@ ggplot(plt.data, aes(x = X3PAr, y = FTr)) +
 
 ```
 
-\newpage
-
-## Line Plots with Facets to Create Subplots
-
-```{r line.facet.plots, fig.width=4, fig.height=3, message = F}
-
-# Load sample dataset with 2016 player statistics for all players in NBA
-
-load("basketball.Rda")
-
-# We'll `tidyr` to reshape the data from `wide` to `long` format using the
-# `gather` command and create a new dataset where each player in the data set
-# has two rows-- one corresponding to their defensive BPM and one corresponding
-# to their offensive BPM. 
-
-library(dplyr)
-library(tidyr)
-
-facet.data <- select(nba.data, Player, Pos, OBPM, DBPM) %>% 
-  gather(key = c(Player, Pos), value = BPM, OBPM:DBPM) %>% 
-  rename(stat = `c(Player, Pos)`) %>% 
-  arrange(Player)
-
-# Facet Plot-- note the formatting options at the bottom to specify facet
-# formatting
-
-ggplot(facet.data) + facet_grid(Pos ~ .) +  
-  geom_density(aes(x = BPM, color = stat)) + 
-  scale_x_continuous(breaks = seq(0, 12, 2)) + 
-  labs(title = "Comparing Offensive and Defensive\nBPM Scores by Position", 
-       x = "BPM", y = "Density", color = "") + 
-  theme_bcg + theme(strip.text.y = element_text(angle = 0),
-                    strip.background = element_rect(color = "grey70", 
-                                                    size = 0.5))
-
-```
-
-\newpage
+~ \newpage
 
 # Map Plots 
 
@@ -425,6 +522,8 @@ grid.arrange(p.1, p.2, widths = 2:1)
 
 ```
 
+~ \newpage
+
 ## Plotting Discrete Variables on a Map
 
 ```{r map.discrete.var, fig.width=5, fig.height=4, message = F}
@@ -471,17 +570,15 @@ nc.map +
 
 ```
 
-\newpage
+~ \newpage 
 
 ## Plotting Continuous Variables on a Map
 
-```{r map.continuous.var, fig.width=7, fig.height=5, message = F}
+```{r map.continuous.var, message = F, fig.width=5, fig.height=4}
 
-library(maps)
-library(ggthemes)
-library(gridExtra)
-
-# Loading geographic data for states + counties in the US. 
+# Loading geographic data for states + counties in the US. `map_data()` takes
+# the series of points-based data provided by the `maps` package and converts
+# into a df that is readable via ggplot2
 
 states.data <- map_data("state") 
 
@@ -494,6 +591,15 @@ USArrests$region <- tolower(rownames(USArrests))
 # Use `dplyr` to merge data sets using region (state) as ID variable
 
 map.df <- inner_join(states.data, USArrests, by = "region")
+
+# Theme below removes all unneccessary axes and tick marks from plots
+
+ditch_the_axes <- theme(axis.text = element_blank(), axis.line = element_blank(),
+                        axis.ticks = element_blank(), panel.border = element_blank(),
+                        panel.grid = element_blank(), axis.title = element_blank())
+
+# Plotting State Murder Rate Data
+
 
 # Mapping state level murder counts. Check out the URL below for ggplot colors
 #   http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
@@ -508,7 +614,7 @@ ggplot(map.df, aes(x = long, y = lat, group = group)) +
 
 ```
 
-\newpage 
+~ \newpage
 
 # Using the \texttt{qplot} Function
 
@@ -540,8 +646,6 @@ grid.arrange(p.1, p.2, p.3, layout_matrix = rbind(c(1,1),c(2,3)),
              nrow = 2, ncol = 2)
 
 ```
-
-\newpage
 
 ## Additional Examples
 
